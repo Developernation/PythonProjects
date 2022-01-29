@@ -71,4 +71,3 @@ class SansNotesApp(object):
 if __name__ == "__main__":
     notes = SansNotesApp()
     notes.database_name = 'test'
-    print(notes.database_name)
