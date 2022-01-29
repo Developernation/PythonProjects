@@ -3,30 +3,27 @@ import sqlite3
 import logging
 import os
 
-
 class SansNotesApp(object):
+    APP_FILES = 'SansNotesAppFiles'
+    APP_DATABASE_FILES = os.path.join(APP_FILES,'NotesAppDbFiles')
 
-    def __init__(self):
-        self.__log_path = 'SansNotesAppFiles'
-        self.__folder = os.path.join(self.__log_path,'NotesAppDbFiles')
-        
-        
-        if not os.path.exists(self.__log_path):
-             os.mkdir(self.__log_path)
+    def __init__(self):  
+        if not os.path.exists(SansNotesApp.APP_FILES):
+             os.mkdir(SansNotesApp.APP_FILES)
 
         logging.basicConfig(
-            filename=os.path.join(self.__log_path,'NotesAppDb.log'), 
+            filename=os.path.join(SansNotesApp.APP_FILES,'NotesAppDb.log'), 
             level=logging.DEBUG,
             filemode='w'
             )
         
-        logging.debug(self.__log_path)
-        if not os.path.exists(self.__folder):
-            os.mkdir(self.__folder)
-            logging.debug(os.listdir(self.__log_path))
+        logging.debug(SansNotesApp.APP_FILES)
+        if not os.path.exists(SansNotesApp.APP_DATABASE_FILES):
+            os.mkdir(SansNotesApp.APP_DATABASE_FILES)
+            logging.debug(os.listdir(SansNotesApp.APP_FILES))
 
     def __format_db_name(self,db_name_fmt:str):
-        db_path = os.path.join(self.__folder,'{}.db'.format(db_name_fmt))
+        db_path = os.path.join(SansNotesApp.APP_DATABASE_FILES,'{}.db'.format(db_name_fmt))
         logging.debug(db_path)
         return db_path
 
