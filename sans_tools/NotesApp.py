@@ -7,7 +7,19 @@ import re
 class SansNotesApp(object):
     APP_FILES = 'SansNotesAppFiles'
     APP_DATABASE_FILES = os.path.join(APP_FILES,'NotesAppDbFiles')
-
+    CREATE_TABLE = """
+        CREATE TABLE IF NOT EXISTS {table_name_field}
+            (
+                subject VARCHAR(50),
+                topic VARCHAR(50),
+                book  VARCHAR(3),
+                page  VARCHAR(3),
+                notes VARCHAR(1000)
+            )
+        """
+    DROP_TABLE = """
+        DROP TABLE {table_name_field};
+    """
 
     def __init__(self):  
         if not os.path.exists(SansNotesApp.APP_FILES):
@@ -25,7 +37,7 @@ class SansNotesApp(object):
             logging.debug(os.listdir(SansNotesApp.APP_FILES))
 
     def __format_db_name(self,db_name_fmt:str):
-        db_path = os.path.join(SansNotesApp.APP_DATABASE_FILES,'{}.db'.format(db_name_fmt))
+        db_path = os.path.join(SansNotesApp.APP_DATABASE_FILES,'{}.db'.format(SansNotesApp.check_char_string(db_name_fmt)))
         logging.debug(db_path)
         return db_path
 
@@ -59,15 +71,36 @@ class SansNotesApp(object):
         if self.check_db_file():
             print(f'{os.path.basename(self.__db_name)} already exists.')
             return False
-        
+        self.db_connect()
         print(f'Created {os.path.basename(self.__db_name)}')
         return True
     
-    def delete_database(self):
+    def show_all_tables(self):
+        self.get_cursor()
+        self.__cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        print(self.__cur.fetchall())
+    
+    def committ_and_close(self) -> bool:
+        self.__con.commit()
+        self.__con.close()
+        return True
+    
+    def drop_table(self):
         pass 
+
+    def create_table(self, table_name) -> bool:
+        self.get_cursor()
+        self.__cur.execute(
+            SansNotesApp.CREATE_TABLE.format(table_name_field=SansNotesApp.check_char_string(table_name))
+            )
+        return True
 
     def insert_data(self,in_data):
         pass 
+
+    def drop_table(self):
+
+        pass
 
     def delete_data(self,del_data):
         pass
@@ -75,10 +108,15 @@ class SansNotesApp(object):
     def search_data(self,s_data):
         pass
 
-    def show_all_databases(self):
-        pass
+    @staticmethod
+    def check_char_string(alpha_string) -> str:
+        return ''.join(re.findall('[\w+\-0-9]',alpha_string))
+   
 
 if __name__ == "__main__":
     notes = SansNotesApp()
     notes.database_name = 'test'
-    notes.create_new_database()
+    notes.db_connect()
+    notes.create_table('my_test_table')
+    notes.show_all_tables()
+    notes.committ_and_close()
