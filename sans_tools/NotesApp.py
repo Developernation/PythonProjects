@@ -2,10 +2,12 @@ from typing import List, Dict, Any
 import sqlite3
 import logging
 import os
+import re
 
 class SansNotesApp(object):
     APP_FILES = 'SansNotesAppFiles'
     APP_DATABASE_FILES = os.path.join(APP_FILES,'NotesAppDbFiles')
+
 
     def __init__(self):  
         if not os.path.exists(SansNotesApp.APP_FILES):
@@ -50,8 +52,16 @@ class SansNotesApp(object):
         logging.debug(self.__cur)
         return self.__cur 
 
-    def create_new_database(self):
-        pass
+    def check_db_file(self) -> bool:
+        return os.path.exists(self.__db_name)
+
+    def create_new_database(self) -> bool:
+        if self.check_db_file():
+            print(f'{os.path.basename(self.__db_name)} already exists.')
+            return False
+        
+        print(f'Created {os.path.basename(self.__db_name)}')
+        return True
     
     def delete_database(self):
         pass 
@@ -71,3 +81,4 @@ class SansNotesApp(object):
 if __name__ == "__main__":
     notes = SansNotesApp()
     notes.database_name = 'test'
+    notes.create_new_database()
