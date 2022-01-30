@@ -1,4 +1,5 @@
 from typing import List, Dict, Any
+from itertools import chain
 import sqlite3
 import logging
 import os
@@ -17,6 +18,7 @@ class SansNotesApp(object):
                 notes VARCHAR(1000)
             )
         """
+    
     DROP_TABLE = """
         DROP TABLE {table_name_field};
     """
@@ -54,52 +56,49 @@ class SansNotesApp(object):
         self.__db_name = self.__format_db_name(db_name)
         logging.debug(self.__db_name)
     
-    def db_connect(self):
+    def db_connect_and_cursor(self):
+        """
+        This function will create a database if it doesn't exist.
+        """
         self.__con = sqlite3.connect(self.__db_name)
         logging.debug(self.__con)
-        return self.__con
-    
-    def get_cursor(self):
         self.__cur = self.__con.cursor()
         logging.debug(self.__cur)
-        return self.__cur 
+        return self.__con
 
     def check_db_file(self) -> bool:
         return os.path.exists(self.__db_name)
-
-    def create_new_database(self) -> bool:
-        if self.check_db_file():
-            print(f'{os.path.basename(self.__db_name)} already exists.')
-            return False
-        self.db_connect()
-        print(f'Created {os.path.basename(self.__db_name)}')
-        return True
     
     def show_all_tables(self):
-        self.get_cursor()
         self.__cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        print(self.__cur.fetchall())
+        tables_normalized = list(chain.from_iterable(self.__cur.fetchall()))
+        print(tables_normalized)
+        return tables_normalized
     
     def committ_and_close(self) -> bool:
         self.__con.commit()
         self.__con.close()
         return True
     
-    def drop_table(self):
-        pass 
-
-    def create_table(self, table_name) -> bool:
-        self.get_cursor()
+    def drop_table(self, table_to_drop) -> bool:
+        clean_drp_tbl_nm = SansNotesApp.check_char_string(table_to_drop)
         self.__cur.execute(
-            SansNotesApp.CREATE_TABLE.format(table_name_field=SansNotesApp.check_char_string(table_name))
+            SansNotesApp.DROP_TABLE.format(table_name_field=clean_drp_tbl_nm)
+        )
+        success = clean_drp_tbl_nm not in self.show_all_tables()
+        logging.debug(f'{SansNotesApp.check_char_string(clean_drp_tbl_nm)} dropped:{success}')
+        return success
+         
+    def create_table(self, table_name) -> bool:
+        clean_crt_tbl_nm = SansNotesApp.check_char_string(table_name)
+        self.__cur.execute(
+            SansNotesApp.CREATE_TABLE.format(table_name_field=clean_crt_tbl_nm)
             )
-        return True
+        success = clean_crt_tbl_nm in self.show_all_tables()
+        logging.debug(f'{SansNotesApp.check_char_string(clean_crt_tbl_nm)} created:{success}')
+        return success
 
     def insert_data(self,in_data):
-        pass 
-
-    def drop_table(self):
-
         pass
 
     def delete_data(self,del_data):
@@ -116,7 +115,8 @@ class SansNotesApp(object):
 if __name__ == "__main__":
     notes = SansNotesApp()
     notes.database_name = 'test'
-    notes.db_connect()
+    notes.db_connect_and_cursor()
     notes.create_table('my_test_table')
     notes.show_all_tables()
+    notes.drop_table('my_test_table')
     notes.committ_and_close()
