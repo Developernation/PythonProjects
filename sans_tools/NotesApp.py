@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Any
 from itertools import chain
 import sqlite3
 import logging
@@ -43,7 +43,7 @@ class SansNotesApp(object):
     """
 
     SEARCH = """
-        SELECT 
+        SELECT DISTINCT
             *
         FROM 
             {table_name_field}
@@ -52,7 +52,7 @@ class SansNotesApp(object):
     """
 
     SHOW_TABLE_DATA = """
-        SELECT 
+        SELECT DISTINCT
             * 
         FROM {table_name_field}
     """
@@ -76,7 +76,7 @@ class SansNotesApp(object):
             os.mkdir(SansNotesApp.APP_DATABASE_FILES)
             logging.debug(os.listdir(SansNotesApp.APP_FILES))
 
-    def __format_db_name(self,db_name_fmt:str):
+    def __format_db_name(self,db_name_fmt:str) -> str:
         db_path = os.path.join(SansNotesApp.APP_DATABASE_FILES,'{}.db'.format(SansNotesApp.check_char_string(db_name_fmt)))
         logging.debug(db_path)
         return db_path
@@ -86,7 +86,7 @@ class SansNotesApp(object):
         return self.__db_name
 
     @database_name.setter
-    def database_name(self,db_name:str) -> str:
+    def database_name(self,db_name:str):
         """
         Enter a string with no spaces or special characters
         as the database name
@@ -94,7 +94,7 @@ class SansNotesApp(object):
         self.__db_name = self.__format_db_name(db_name)
         logging.debug(self.__db_name)
     
-    def db_connect_and_cursor(self):
+    def db_connect_and_cursor(self) -> bool:
         """
         This function will create a database if it doesn't exist.
         """
@@ -102,15 +102,14 @@ class SansNotesApp(object):
         logging.debug(self.__con)
         self.__cur = self.__con.cursor()
         logging.debug(self.__cur)
-        return self.__con
+        return True
 
     def check_db_file(self) -> bool:
         return os.path.exists(self.__db_name)
     
-    def show_all_tables(self):
+    def show_tables(self) -> List[str]:
         self.__cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables_normalized = list(chain.from_iterable(self.__cur.fetchall()))
-        print(tables_normalized)
         return tables_normalized
     
     def committ_and_close(self) -> bool:
@@ -123,7 +122,7 @@ class SansNotesApp(object):
         self.__cur.execute(
             SansNotesApp.DROP_TABLE.format(table_name_field=clean_drp_tbl_nm)
         )
-        success = clean_drp_tbl_nm not in self.show_all_tables()
+        success = clean_drp_tbl_nm not in self.show_tables()
         logging.debug(f'{SansNotesApp.check_char_string(clean_drp_tbl_nm)} dropped:{success}')
         return success
          
@@ -132,7 +131,7 @@ class SansNotesApp(object):
         self.__cur.execute(
             SansNotesApp.CREATE_TABLE.format(table_name_field=clean_crt_tbl_nm)
             )
-        success = clean_crt_tbl_nm in self.show_all_tables()
+        success = clean_crt_tbl_nm in self.show_tables()
         logging.debug(f'{SansNotesApp.check_char_string(clean_crt_tbl_nm)} created:{success}')
         return success
 
@@ -144,7 +143,7 @@ class SansNotesApp(object):
         book, 
         page, 
         notes = ''
-        ):
+        )-> bool:
         values_ = ','.join(
             map(
                 lambda x: str(x),
@@ -176,7 +175,7 @@ class SansNotesApp(object):
         )
         return True
     
-    def show_table_data(self,table_name):
+    def show_table_data(self,table_name) -> List[Any]:
         clean_table_name = SansNotesApp.check_char_string(table_name)
         show_table_query_string = SansNotesApp.SHOW_TABLE_DATA.format(table_name_field = clean_table_name)
         logging.debug(show_table_query_string)
@@ -184,10 +183,31 @@ class SansNotesApp(object):
               show_table_query_string
         )]
         logging.debug(f'table_data: {[[tuple[0] for tuple in self.__cur.description]]+table_data}')
-        return True
+        return table_data 
 
-    def delete_data(self,del_data):
-        pass
+    def delete_data(self,
+        table_name,
+        subject = None, 
+        topic = None, 
+        book = None, 
+        page = None, 
+        notes = None,
+        strict_search = True) -> bool:
+        del_query_string = SansNotesApp.DELETE_DATA.format(table_name_field=SansNotesApp.check_char_string(table_name)) \
+            if not any({subject,topic,book,page,notes}) \
+            else SansNotesApp.DELETE_DATA.format(table_name_field=SansNotesApp.check_char_string(table_name)) + SansNotesApp.format_where_clause(
+                subject, 
+                topic, 
+                book, 
+                page,  
+                notes,
+                strict_search   
+            )
+        self.__cur.execute(
+            del_query_string
+        )
+        logging.debug(f'del_query_string: {del_query_string}')
+        return True
 
     def search_data(self,
         table_name,
@@ -197,7 +217,7 @@ class SansNotesApp(object):
         page = None, 
         notes = None,
         strict_search = True
-        ):
+        ) -> List[Any]:
         search_query_string = SansNotesApp.SHOW_TABLE_DATA.format(table_name_field=SansNotesApp.check_char_string(table_name)) \
             if not any({subject,topic,book,page,notes}) \
             else SansNotesApp.SHOW_TABLE_DATA.format(table_name_field=SansNotesApp.check_char_string(table_name)) + SansNotesApp.format_where_clause(
@@ -212,16 +232,16 @@ class SansNotesApp(object):
         search_table_data = [*self.__cur.execute(
             search_query_string
         )]
-        logging.debug(f'search_table_data: {[[tuple[0] for tuple in self.__cur.description]]+search_table_data}')
-        return True
+        search_data_list = [[tuple[0] for tuple in self.__cur.description]]+search_table_data
+        logging.debug(f'search_table_data: {search_data_list}')
+        return search_data_list
         
-
     @staticmethod
     def check_char_string(alphanum_string,strict=True) -> str:
         if strict:
-            return ''.join(re.findall('[\w+\-0-9]+',alphanum_string))
+            return ''.join(re.findall('[\w+\-0-9\s]+',alphanum_string))
         else:
-            return ''.join(re.findall('[\w\-0-9\._+,\s]+',alphanum_string))
+            return ''.join(re.findall('[\w\-0-9\._+,\s\']+',alphanum_string))
     
     @staticmethod
     def __format_values_string(val:str,strict_format=True) -> str:
@@ -236,37 +256,35 @@ class SansNotesApp(object):
         page = None, 
         notes = None,
         strict_search = True,
-        ):
+        ) -> List[str]:
         sep = ' = ' if strict_search else 'LIKE' 
         field_data =' WHERE' + ' AND '.join(
-            [
-            f' {k} {sep} {cls.__format_values_string(cls.check_char_string(v,strict=False),strict_format=strict_search)}' for k,v in {
-            'subject':subject,
-            'topic':topic,
-            'book':book,
-            'page':page,
-            'notes':notes
-            }.items() 
-            if v != None
-            ]
+                [
+                    f' {k} {sep} {cls.__format_values_string(cls.check_char_string(v,strict=False),strict_format=strict_search)}' for k,v in {
+                        'subject':subject,
+                        'topic':topic,
+                        'book':book,
+                        'page':page,
+                        'notes':notes
+                    }.items() 
+                if v != None
+                ]
             )
         logging.debug('format_where_clause: '+field_data)
         return field_data
-
-
-if __name__ == "__main__":
-    notes = SansNotesApp()
-    notes.database_name = 'test'
-    notes.db_connect_and_cursor()
-    #notes.create_table('my_test_table')
-    notes.show_all_tables()
-    notes.show_table_data('my_test_table')
-    notes.search_data('my_test_table','drink','wine',strict_search=False)
-    #notes.insert_values('my_test_table','drink','wine','red wine','80-91','glub glub')
-    # notes.format_where_clause(
-    #     'my_test_table',
-    #     'food',
-    #     'cheese',
-    #     strict_search=False  
-    # )
-    notes.committ_and_close()
+    
+    @classmethod
+    def show_databases(cls) -> List[str]:
+        return os.listdir(cls.APP_DATABASE_FILES)
+    
+    @classmethod
+    def remove_database(cls,database_name: str) -> bool:
+        db_name = '{}.db'.format(database_name.split('.')[0])
+        file_path_ = os.path.join(cls.APP_DATABASE_FILES,db_name)
+        if os.path.isfile(file_path_):
+            os.remove(file_path_)
+            print(f'Deleted {db_name} at {file_path_}')
+            return True 
+        else:
+            print(f'{db_name} not found')
+            return False
