@@ -24,7 +24,7 @@ class SansNotesApp(object):
     """
 
     INSERT = """
-        INSERT INTO {table_name} 
+        INSERT INTO {table_name_field} 
             (
                 subject, 
                 topic, 
@@ -40,6 +40,17 @@ class SansNotesApp(object):
                 {page_},
                 {notes_}
             );
+    """
+
+    SEARCH = """
+        SELECT 
+            *
+        FROM 
+            {table_name_field}
+        WHERE
+            {col_name}   
+
+    
     """
 
     def __init__(self):  
@@ -146,7 +157,7 @@ class SansNotesApp(object):
     def delete_data(self,del_data):
         pass
 
-    def search_data(self,s_data):
+    def search_data(self,s_data,strict=True):
         pass
 
     @staticmethod
