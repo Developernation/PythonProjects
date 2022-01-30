@@ -23,6 +23,25 @@ class SansNotesApp(object):
         DROP TABLE {table_name_field};
     """
 
+    INSERT = """
+        INSERT INTO {table_name} 
+            (
+                subject, 
+                topic, 
+                book, 
+                page, 
+                notes
+            )
+        VALUES 
+            (
+                {subject_},
+                {topic_}, 
+                {book_},
+                {page_},
+                {notes_}
+            );
+    """
+
     def __init__(self):  
         if not os.path.exists(SansNotesApp.APP_FILES):
              os.mkdir(SansNotesApp.APP_FILES)
@@ -98,8 +117,31 @@ class SansNotesApp(object):
         logging.debug(f'{SansNotesApp.check_char_string(clean_crt_tbl_nm)} created:{success}')
         return success
 
-    def insert_data(self,in_data):
-        pass
+    def insert_data(
+        self,
+        subject, 
+        topic, 
+        book, 
+        page, 
+        notes
+        ):
+        values_ = ','.join(
+            map(
+                lambda x: str(x),
+                    [
+                        subject, 
+                        topic, 
+                        book, 
+                        page, 
+                        notes
+                    ]
+            )
+        )
+        values_str = SansNotesApp.check_char_string(values_,strict=False)
+        self.__cur.execute(
+            SansNotesApp.INSERT.format(table_name_field=values_str)
+            )
+        return True
 
     def delete_data(self,del_data):
         pass
@@ -108,8 +150,11 @@ class SansNotesApp(object):
         pass
 
     @staticmethod
-    def check_char_string(alpha_string) -> str:
-        return ''.join(re.findall('[\w+\-0-9]',alpha_string))
+    def check_char_string(alphanum_string,strict=True) -> str:
+        if strict:
+            return ''.join(re.findall('[\w+\-0-9]',alphanum_string))
+        else:
+            return ''.join(re.findall('[\w+\-0-9\._+,]',alphanum_string))
    
 
 if __name__ == "__main__":
