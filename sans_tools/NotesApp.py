@@ -16,7 +16,7 @@ class SansNotesApp(object):
                 book  VARCHAR(3),
                 page  VARCHAR(3),
                 notes VARCHAR(1000)
-            )
+            );
         """
     
     DROP_TABLE = """
@@ -49,8 +49,16 @@ class SansNotesApp(object):
             {table_name_field}
         WHERE
             {col_name}   
+    """
 
-    
+    SHOW_TABLE_DATA = """
+        SELECT 
+            * 
+        FROM {table_name_field}
+    """
+
+    DELETE_DATA = """
+        DELETE FROM {table_name_field} 
     """
 
     def __init__(self):  
@@ -128,13 +136,14 @@ class SansNotesApp(object):
         logging.debug(f'{SansNotesApp.check_char_string(clean_crt_tbl_nm)} created:{success}')
         return success
 
-    def insert_data(
+    def insert_values(
         self,
+        table_name,
         subject, 
-        topic, 
+        topic,
         book, 
         page, 
-        notes
+        notes = ''
         ):
         values_ = ','.join(
             map(
@@ -148,31 +157,116 @@ class SansNotesApp(object):
                     ]
             )
         )
+        
         values_str = SansNotesApp.check_char_string(values_,strict=False)
+        values_list = values_str.split(',')
+        fmt_func = SansNotesApp.__format_values_string
+        insert_value_query_string = SansNotesApp.INSERT.format(
+            table_name_field=table_name,
+            subject_=fmt_func(values_list[0]),
+            topic_=fmt_func(values_list[1]), 
+            book_=fmt_func(values_list[2]),
+            page_=fmt_func(values_list[3]),
+            notes_=fmt_func(values_list[4])
+        
+        )
+        logging.debug(insert_value_query_string)
         self.__cur.execute(
-            SansNotesApp.INSERT.format(table_name_field=values_str)
-            )
+            insert_value_query_string
+        )
+        return True
+    
+    def show_table_data(self,table_name):
+        clean_table_name = SansNotesApp.check_char_string(table_name)
+        show_table_query_string = SansNotesApp.SHOW_TABLE_DATA.format(table_name_field = clean_table_name)
+        logging.debug(show_table_query_string)
+        table_data = [*self.__cur.execute(
+              show_table_query_string
+        )]
+        logging.debug(f'table_data: {[[tuple[0] for tuple in self.__cur.description]]+table_data}')
         return True
 
     def delete_data(self,del_data):
         pass
 
-    def search_data(self,s_data,strict=True):
-        pass
+    def search_data(self,
+        table_name,
+        subject = None, 
+        topic = None, 
+        book = None, 
+        page = None, 
+        notes = None,
+        strict_search = True
+        ):
+        search_query_string = SansNotesApp.SHOW_TABLE_DATA.format(table_name_field=SansNotesApp.check_char_string(table_name)) \
+            if not any({subject,topic,book,page,notes}) \
+            else SansNotesApp.SHOW_TABLE_DATA.format(table_name_field=SansNotesApp.check_char_string(table_name)) + SansNotesApp.format_where_clause(
+                subject, 
+                topic, 
+                book, 
+                page,  
+                notes,
+                strict_search   
+            )
+        logging.debug(f'search_query_string: {search_query_string}')
+        search_table_data = [*self.__cur.execute(
+            search_query_string
+        )]
+        logging.debug(f'search_table_data: {[[tuple[0] for tuple in self.__cur.description]]+search_table_data}')
+        return True
+        
 
     @staticmethod
     def check_char_string(alphanum_string,strict=True) -> str:
         if strict:
-            return ''.join(re.findall('[\w+\-0-9]',alphanum_string))
+            return ''.join(re.findall('[\w+\-0-9]+',alphanum_string))
         else:
-            return ''.join(re.findall('[\w+\-0-9\._+,]',alphanum_string))
-   
+            return ''.join(re.findall('[\w\-0-9\._+,\s]+',alphanum_string))
+    
+    @staticmethod
+    def __format_values_string(val:str,strict_format=True) -> str:
+        val = str(val)
+        return f'\'{val}\'' if strict_format else f'\'%{val}%\''
+    
+    @classmethod
+    def format_where_clause(cls,
+        subject = None, 
+        topic = None, 
+        book = None, 
+        page = None, 
+        notes = None,
+        strict_search = True,
+        ):
+        sep = ' = ' if strict_search else 'LIKE' 
+        field_data =' WHERE' + ' AND '.join(
+            [
+            f' {k} {sep} {cls.__format_values_string(cls.check_char_string(v,strict=False),strict_format=strict_search)}' for k,v in {
+            'subject':subject,
+            'topic':topic,
+            'book':book,
+            'page':page,
+            'notes':notes
+            }.items() 
+            if v != None
+            ]
+            )
+        logging.debug('format_where_clause: '+field_data)
+        return field_data
+
 
 if __name__ == "__main__":
     notes = SansNotesApp()
     notes.database_name = 'test'
     notes.db_connect_and_cursor()
-    notes.create_table('my_test_table')
+    #notes.create_table('my_test_table')
     notes.show_all_tables()
-    notes.drop_table('my_test_table')
+    notes.show_table_data('my_test_table')
+    notes.search_data('my_test_table','drink','wine',strict_search=False)
+    #notes.insert_values('my_test_table','drink','wine','red wine','80-91','glub glub')
+    # notes.format_where_clause(
+    #     'my_test_table',
+    #     'food',
+    #     'cheese',
+    #     strict_search=False  
+    # )
     notes.committ_and_close()
