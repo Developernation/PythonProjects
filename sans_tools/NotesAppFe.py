@@ -149,6 +149,7 @@ def delete_table():
     remove_item()
     return True
 
+
 frame5 = tk.Frame(master=super_frame_tab1,relief=border_effects['flat'],width=100, height=10)
 label_opt = tk.Label(master=frame5, text='Options',width=10)
 
@@ -177,7 +178,7 @@ def show_search_data():
     'page':frm3_tb2.get(),
     }
     
-
+    global search_data
     search_data = notes_db.search_data( 
         show_vals['table'],
         show_vals['subject'],
@@ -186,9 +187,11 @@ def show_search_data():
         show_vals['page'],
         strict_search = False
     )
-
-    Output.insert(tk.END,search_data)
     
+    Output.insert(tk.END,search_data)
+
+def save_to_excel():
+    search_data.sort_values(by='topic').reset_index(drop=True).to_excel('~/Downloads/search_data.xlsx')
 
 super_frame_tab2 = ttk.Frame(master=window,relief=border_effects['flat'])
 
@@ -216,8 +219,17 @@ Show_Button = tk.Button(master=frame0a_tb2,
                  text ="Show Data",
                  relief=tk.RIDGE,
                  command = lambda : show_search_data() )
+
+To_Excel_Button = tk.Button(master=frame0a_tb2, 
+                 height = 1,
+                 width = 15,
+                 text ="Save To Excel",
+                 relief=tk.RIDGE,
+                 command = lambda : save_to_excel())
+
 label_opt2.pack(side='left')
 Show_Button.pack(side='left')
+To_Excel_Button.pack(side='left')
 frame0a_tb2.pack(fill=tk.X)
 #------
 frame0b_tb2 = tk.Frame(master=super_frame_tab2,relief=border_effects['flat'],width=100, height=10)
