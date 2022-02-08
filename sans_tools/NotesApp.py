@@ -1,5 +1,6 @@
 from typing import List, Any
 from itertools import chain
+import pandas as pd
 import sqlite3
 import logging
 import os
@@ -232,7 +233,7 @@ class SansNotesApp(object):
         search_table_data = [*self.__cur.execute(
             search_query_string
         )]
-        search_data_list = [[tuple[0] for tuple in self.__cur.description]]+search_table_data
+        search_data_list = pd.DataFrame(search_table_data,columns=[tuple[0] for tuple in self.__cur.description])
         logging.debug(f'search_table_data: {search_data_list}')
         return search_data_list
         
@@ -288,3 +289,10 @@ class SansNotesApp(object):
         else:
             print(f'{db_name} not found')
             return False
+
+if __name__ == '__main__':
+    test_db = SansNotesApp()
+    test_db.database_name = "sans"
+    test_db.db_connect_and_cursor()
+    print(test_db.show_table_data('test_table'))
+    test_db.committ_and_close()
