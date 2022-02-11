@@ -3,6 +3,8 @@ from tkinter import ttk
 from turtle import color
 import pandas as pd
 from NotesApp import SansNotesApp as snp
+pd.set_option('display.max_rows', None)
+
 
 #database connection
 notes_db = snp()
@@ -98,7 +100,6 @@ inputtxt = tk.Text(master= frame3, height = 5, width = 52,borderwidth=4,relief=b
 label2 = tk.Label(master=frame3, text=label_text[4],width=10)
 label2.pack(side='left')
 inputtxt.pack(side='left')
-#inputtxt.insert(tk.END,"test")
 frame3.pack(fill=tk.X)
 
 def write_dataA():
@@ -170,6 +171,7 @@ tabControl.add(super_frame_tab1,text='Add Data')
 #############################################################
 def show_search_data():
     Output.delete('1.0', tk.END)
+    global show_vals
     show_vals = {
     'table': clickedB.get(),
     'subject':frm0_tb2.get(),
@@ -189,6 +191,24 @@ def show_search_data():
     )
     
     Output.insert(tk.END,search_data)
+
+def show_all_table_data():
+    Output.delete('1.0', tk.END)
+    global search_data
+    search_data = notes_db.show_table_data(clickedB.get())
+    Output.insert(tk.END,search_data)
+
+def delete_data():
+    global show_vals
+    notes_db.delete_data(
+        show_vals['table'],
+        show_vals['subject'],
+        show_vals['topic'],
+        show_vals['book'],
+        show_vals['page'],
+    )
+    show_search_data()
+
 
 def save_to_excel():
     search_data.sort_values(by='topic').reset_index(drop=True).to_excel('~/Downloads/search_data.xlsx')
@@ -213,23 +233,40 @@ frm3_tb2 = build_frame(label_text[3],5,super_frame_tab2)
 
 frame0a_tb2 = tk.Frame(master=super_frame_tab2,relief=border_effects['flat'],width=100, height=10)
 label_opt2 = tk.Label(master=frame0a_tb2, text='Options:',width=10)
-Show_Button = tk.Button(master=frame0a_tb2, 
+
+Show_Search_Button = tk.Button(master=frame0a_tb2, 
                  height = 1,
-                 width = 10,
-                 text ="Show Data",
+                 width = 15,
+                 text ="Show Search Data",
                  relief=tk.RIDGE,
                  command = lambda : show_search_data() )
+
+Search_All_Data = tk.Button(master=frame0a_tb2, 
+                 height = 1,
+                 width = 15,
+                 text ="Show All Data",
+                 relief=tk.RIDGE,
+                 command = lambda : show_all_table_data())
 
 To_Excel_Button = tk.Button(master=frame0a_tb2, 
                  height = 1,
                  width = 15,
-                 text ="Save To Excel",
+                 text ="Save Display To Excel",
                  relief=tk.RIDGE,
                  command = lambda : save_to_excel())
 
+Delete_Data_Button = tk.Button(master=frame0a_tb2, 
+                 height = 1,
+                 width = 15,
+                 text ="Delete Dislayed Data",
+                 relief=tk.RIDGE,
+                 command = lambda : delete_data())
+
 label_opt2.pack(side='left')
-Show_Button.pack(side='left')
+Show_Search_Button.pack(side='left')
+Search_All_Data.pack(side='left')
 To_Excel_Button.pack(side='left')
+Delete_Data_Button.pack(side='left')
 frame0a_tb2.pack(fill=tk.X)
 #------
 frame0b_tb2 = tk.Frame(master=super_frame_tab2,relief=border_effects['flat'],width=100, height=10)
@@ -249,7 +286,7 @@ tabControl.add(super_frame_tab2,text='Search Data')
 tabControl.pack(expand=1, fill="both",side='right')
 
 ############################################################################
-############# adding third tab #############################################
+#################### Create / Delete Table #################################
 ############################################################################
 super_frame_tab3 = ttk.Frame(master=window,relief=border_effects['flat'])
 

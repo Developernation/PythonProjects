@@ -5,7 +5,10 @@ import sqlite3
 import logging
 import os
 import re
+pd.set_option('display.max_rows', None)
 
+
+## https://stackoverflow.com/questions/33155776/export-pandas-dataframe-into-a-pdf-file-using-python
 class SansNotesApp(object):
     APP_FILES = 'SansNotesAppFiles'
     APP_DATABASE_FILES = os.path.join(APP_FILES,'NotesAppDbFiles')
@@ -183,8 +186,9 @@ class SansNotesApp(object):
         table_data = [*self.__cur.execute(
               show_table_query_string
         )]
+        table_data_df = pd.DataFrame( table_data , columns=[tuple[0] for tuple in self.__cur.description])
         logging.debug(f'table_data: {[[tuple[0] for tuple in self.__cur.description]]+table_data}')
-        return table_data 
+        return table_data_df
 
     def delete_data(self,
         table_name,
@@ -258,16 +262,13 @@ class SansNotesApp(object):
         notes = None,
         strict_search = True,
         ) -> List[str]:
+        params_dict = {k:v for k,v in {'subject':subject,'topic':topic,'book':book,'page':page,'notes':notes}.items() if v is not None and len(v) > 0}
         sep = ' = ' if strict_search else 'LIKE' 
-        field_data =' WHERE' + ' AND '.join(
+        field_data ='{}'.format('WHERE' if len(list(params_dict.keys())) > 0 else '')  + ' AND '.join(
                 [
-                    f' {k} {sep} {cls.__format_values_string(cls.check_char_string(v,strict=False),strict_format=strict_search)}' for k,v in {
-                        'subject':subject,
-                        'topic':topic,
-                        'book':book,
-                        'page':page,
-                        'notes':notes
-                    }.items() 
+                    f' {k} {sep} {cls.__format_values_string( cls.check_char_string(v,strict=False),strict_format=strict_search)}' 
+                    for k,v in 
+                        params_dict.items() 
                 if v != None
                 ]
             )
@@ -292,7 +293,8 @@ class SansNotesApp(object):
 
 if __name__ == '__main__':
     test_db = SansNotesApp()
-    test_db.database_name = "sans"
-    test_db.db_connect_and_cursor()
-    print(test_db.show_table_data('test_table'))
-    test_db.committ_and_close()
+    # test_db.database_name = "sans"
+    # test_db.db_connect_and_cursor()
+    # print(test_db.show_table_data('test_table'))
+    #print(SansNotesApp.format_where_clause(subject='test'))
+    # test_db.committ_and_close()
