@@ -30,10 +30,12 @@ The app uses data tables to save and access your index and automatically sorts t
 
 The application has 3 tabs ```Add Data```, ```Search Data```, and ```Create Table```. 
 
-By default the app creates the ```default_sans_table``` but you are able to create other tables specific to your class if you like in the ```Create Tables``` tab. 
+By default the app creates the ```default_sans_table``` but you are able to create other tables specific to your class if you like in the ```Create Tables``` tab.
 
+### Adding Data
 In the ```Add Data``` tab, you can enter the data you would like to record and save it to the data table using the ```Add Data``` button.
 
+### Searching, Deleting, and Saving Data to Excel
 To view the data you just added you can select the ```Search Data``` tab, select the table you added data to using the drop down menu, and then click the ```Show All Data``` button or enter a search for your data and click ```Show Search Data```.
 
 To save data to an excel file you much first search for the data you'd like to display by:
@@ -44,8 +46,9 @@ To save data to an excel file you much first search for the data you'd like to d
 
 To delete the displayed data you must first search for data to populate the display and then you can click the ```Delete Displayed Data``` button and the data will be removed from the table. 
 
+### Creating and Deleting Tables
 In the ```Create Table``` tab you can create or delete a table.
-
+--------------------------------------------------------------------------------------------------------------------
 That's it! Enjoy and let me know if you find bugs :)
 
 Say hello on [LinkedIn](https://www.linkedin.com/in/sim-a-2aa9878a/) !
