@@ -47,6 +47,7 @@ To save data to an excel file you much first search for the data you'd like to d
 To delete the displayed data you must first search for data to populate the display and then you can click the ```Delete Displayed Data``` button and the data will be removed from the table. 
 
 ### Creating and Deleting Tables
+
 In the ```Create Table``` tab you can create or delete a table.
 --------------------------------------------------------------------------------------------------------------------
 That's it! Enjoy and let me know if you find bugs :)
