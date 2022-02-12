@@ -15,3 +15,6 @@ The Sans Notes App is a simple desktop applcication to make creating an index wi
 This python application utilizes a sqlite database on the backend to store records for easy access and utilization in other programs.
 
 ## Installation
+
+1) [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and git clone https://github.com/Developernation/PythonProjects.git OR download the zip 
+2) cd into the sans_tools folder and 
