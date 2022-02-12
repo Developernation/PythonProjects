@@ -1,1 +1,3 @@
-## Sans Notes App
+# Sans Notes App
+
+## Installation 
