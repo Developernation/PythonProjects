@@ -241,7 +241,7 @@ To_Excel_Button = tk.Button(master=frame0a_tb2,
 Delete_Data_Button = tk.Button(master=frame0a_tb2, 
                  height = 1,
                  width = 15,
-                 text ="Delete Dislayed Data",
+                 text ="Delete Displayed Data",
                  relief=tk.RIDGE,
                   fg = "red",
                  command = lambda : delete_data())
