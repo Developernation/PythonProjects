@@ -291,10 +291,3 @@ class SansNotesApp(object):
             print(f'{db_name} not found')
             return False
 
-if __name__ == '__main__':
-    test_db = SansNotesApp()
-    # test_db.database_name = "sans"
-    # test_db.db_connect_and_cursor()
-    # print(test_db.show_table_data('test_table'))
-    #print(SansNotesApp.format_where_clause(subject='test'))
-    # test_db.committ_and_close()
