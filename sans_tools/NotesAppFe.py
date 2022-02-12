@@ -14,8 +14,6 @@ db_list = notes_db.show_databases()
 notes_db.create_table('default_sans_table')
 db_tables = notes_db.show_tables()
 
-#print('db: ',db_list,'\ntables:',db_tables)
-
 #first frame
 def build_frame(label_text_info,box_width,master_frame):
     frame1 = tk.Frame(master=master_frame,relief=border_effects['flat'],width=100, height=10)
@@ -24,22 +22,7 @@ def build_frame(label_text_info,box_width,master_frame):
     label1.pack(side='left')
     text_box1.pack(side='left')
     frame1.pack(fill=tk.X)
-    return text_box1 #fill=tk.X,
-
-# def Take_input():
-#     """insert query into this function"""
-#     INPUT = inputtxt.get("1.0", "end-1c")
-#     data ='test'
-#     print(data)
-#     Output.insert(tk.END,INPUT)
-
-# def show_tabA():
-#     """used for drop down list"""
-#     tk.label.config( text = tk.clickedA.get() )
-
-# def show_tabB():
-#     """used for drop down list"""
-#     tk.label.config( text = tk.clickedB.get() )
+    return text_box1
 
 #-------------------------------------------------------------------------
 border_effects = {
@@ -51,7 +34,6 @@ border_effects = {
 }
 
 min_width, min_height = 300,400
-#max_width, max_height = 800,800
 
 label_text = ['Subject:','Topic:','Book:','Page:','Notes:']
 
@@ -59,9 +41,8 @@ label_text = ['Subject:','Topic:','Book:','Page:','Notes:']
 window = tk.Tk()
 
 tabControl = ttk.Notebook(window)
-#window.geometry('800x1000+50+50')
+
 window.minsize(min_width, min_height)
-#window.maxsize(max_width, max_height)
 window.title('SANS NOTES APP')
 
 #setting defaults for table list
@@ -84,8 +65,6 @@ drop_down_labelA.pack(side='left')
 # Create Dropdown menu
 dropA = tk.OptionMenu(drop_down_frameA , clickedA, *db_tables)
 dropA.pack(side='left')
-# drop_down_button = tk.Button( drop_down_frame , text = "click Me" , command = show )
-# drop_down_button.pack()
 drop_down_frameA.pack(fill=tk.X)
     
 
@@ -111,7 +90,6 @@ def write_dataA():
     'page':frm3.get(),
     'notes':inputtxt.get("1.0","end-1c"),
     }
-    # print(input_vals)
 
     notes_db.insert_values(
         input_vals['table'],
@@ -138,7 +116,6 @@ def remove_item():
     r_index1=dropB['menu'].index(frm0_tb3.get())
     dropB['menu'].delete(r_index1)
     clickedB.set(dropB['menu'].entrycget(0,"label")) # select the first one 
-    # print(dir(dropB['menu']))
 
     r_index2=dropA['menu'].index(frm0_tb3.get())
     dropA['menu'].delete(r_index2)
@@ -199,7 +176,6 @@ def show_all_table_data():
     Output.insert(tk.END,search_data)
 
 def delete_data():
-    global show_vals
     notes_db.delete_data(
         table_name=clickedB.get(),
         subject=frm0_tb2.get(),
