@@ -1,10 +1,9 @@
-import tkinter as tk
-from tkinter import ttk
-from turtle import color
-import pandas as pd
 from NotesApp import SansNotesApp as snp
+from datetime import datetime
+from tkinter import ttk
+import tkinter as tk
+import pandas as pd
 pd.set_option('display.max_rows', None)
-
 
 #database connection
 notes_db = snp()
@@ -50,7 +49,7 @@ clickedA = tk.StringVar()
 clickedA.set(db_tables[0])
 
 clickedB = tk.StringVar()
-clickedB.set(db_tables[1])
+clickedB.set(db_tables[0])
 
 ########################################################
 #################### Add Data ##########################
@@ -83,12 +82,12 @@ frame3.pack(fill=tk.X)
 
 def write_dataA():
     input_vals = {
-    'table': clickedA.get(),
-    'subject':frm0.get(),
-    'topic':frm1.get(),
-    'book':frm2.get(),
-    'page':frm3.get(),
-    'notes':inputtxt.get("1.0","end-1c"),
+    'table': clickedA.get().strip(),
+    'subject':frm0.get().strip(),
+    'topic':frm1.get().strip(),
+    'book':frm2.get().strip(),
+    'page':frm3.get().strip(),
+    'notes':inputtxt.get("1.0","end-1c").strip(),
     }
 
     notes_db.insert_values(
@@ -108,7 +107,7 @@ def add_opt():
     db_tables.append(frm0_tb3.get())
 
 def create_table():
-    notes_db.create_table(frm0_tb3.get())
+    notes_db.create_table(frm0_tb3.get().strip())
     add_opt()
     return True
 
@@ -123,7 +122,7 @@ def remove_item():
     return True 
 
 def delete_table():
-    notes_db.drop_table(frm0_tb3.get())
+    notes_db.drop_table(frm0_tb3.get().strip())
     remove_item()
     return True
 
@@ -135,9 +134,13 @@ Add_Button = tk.Button(master=frame5,
                  height = 1,
                  width = 10,
                  text ="Add Data",
-                 relief=tk.RIDGE,
+                 relief=tk.RAISED,
+                 fg = "blue",
                  command = lambda:write_dataA()
                  )
+
+
+
 frame5.pack(fill=tk.X)
 label_opt.pack(side='left')
 Add_Button.pack(side='left')
@@ -177,17 +180,18 @@ def show_all_table_data():
 
 def delete_data():
     notes_db.delete_data(
-        table_name=clickedB.get(),
-        subject=frm0_tb2.get(),
-        topic=frm1_tb2.get(),
-        book=frm2_tb2.get(),
-        page=frm3_tb2.get(),
+        table_name=clickedB.get().strip(),
+        subject=frm0_tb2.get().strip(),
+        topic=frm1_tb2.get().strip(),
+        book=frm2_tb2.get().strip(),
+        page=frm3_tb2.get().strip(),
     )
     show_search_data()
 
-
 def save_to_excel():
-    search_data.sort_values(by='topic').reset_index(drop=True).to_excel('~/Downloads/search_data.xlsx')
+    search_data.sort_values(by='topic').reset_index(drop=True).to_excel(
+        f'~/Downloads/search_data{datetime.today().strftime("%y%m%d_%H%M%S")}.xlsx'
+        )
 
 super_frame_tab2 = ttk.Frame(master=window,relief=border_effects['flat'])
 
@@ -215,6 +219,7 @@ Show_Search_Button = tk.Button(master=frame0a_tb2,
                  width = 15,
                  text ="Show Search Data",
                  relief=tk.RIDGE,
+                 fg = "blue",
                  command = lambda : show_search_data() )
 
 Search_All_Data = tk.Button(master=frame0a_tb2, 
@@ -222,6 +227,7 @@ Search_All_Data = tk.Button(master=frame0a_tb2,
                  width = 15,
                  text ="Show All Data",
                  relief=tk.RIDGE,
+                  fg = "blue",
                  command = lambda : show_all_table_data())
 
 To_Excel_Button = tk.Button(master=frame0a_tb2, 
@@ -229,6 +235,7 @@ To_Excel_Button = tk.Button(master=frame0a_tb2,
                  width = 15,
                  text ="Save Display To Excel",
                  relief=tk.RIDGE,
+                  fg = "blue",
                  command = lambda : save_to_excel())
 
 Delete_Data_Button = tk.Button(master=frame0a_tb2, 
@@ -236,6 +243,7 @@ Delete_Data_Button = tk.Button(master=frame0a_tb2,
                  width = 15,
                  text ="Delete Dislayed Data",
                  relief=tk.RIDGE,
+                  fg = "red",
                  command = lambda : delete_data())
 
 label_opt2.pack(side='left')
@@ -277,6 +285,7 @@ Create_Button = tk.Button(master=frame0_tb3,
                  text ="Create Table",
                  relief=tk.RIDGE,
                  padx=5,
+                 fg = "blue",
                  command = create_table
                  )
 
