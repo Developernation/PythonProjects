@@ -3,6 +3,7 @@ from datetime import datetime
 from tkinter import ttk
 import tkinter as tk
 import pandas as pd
+import os
 pd.set_option('display.max_rows', None)
 
 #database connection
@@ -190,7 +191,7 @@ def delete_data():
 
 def save_to_excel():
     search_data.sort_values(by='topic').reset_index(drop=True).to_excel(
-        f'~/Downloads/search_data{datetime.today().strftime("%y%m%d_%H%M%S")}.xlsx'
+        f"{os.path.join(os.path.expanduser('~'),'Downloads','search_data' + datetime.today().strftime('%y%m%d_%H%M%S'))}.xlsx"
         )
 
 super_frame_tab2 = ttk.Frame(master=window,relief=border_effects['flat'])
