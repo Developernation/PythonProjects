@@ -11,10 +11,10 @@ notes_db = snp()
 notes_db.database_name = 'sans'
 notes_db.db_connect_and_cursor()
 db_list = notes_db.show_databases()
-notes_db.create_table("test_table")#('default_sans_table')
+notes_db.create_table('default_sans_table')
 db_tables = notes_db.show_tables()
 
-print('db: ',db_list,'\ntables:',db_tables)
+#print('db: ',db_list,'\ntables:',db_tables)
 
 #first frame
 def build_frame(label_text_info,box_width,master_frame):
@@ -26,20 +26,20 @@ def build_frame(label_text_info,box_width,master_frame):
     frame1.pack(fill=tk.X)
     return text_box1 #fill=tk.X,
 
-def Take_input():
-    """insert query into this function"""
-    INPUT = inputtxt.get("1.0", "end-1c")
-    data ='test'
-    print(data)
-    Output.insert(tk.END,INPUT)
+# def Take_input():
+#     """insert query into this function"""
+#     INPUT = inputtxt.get("1.0", "end-1c")
+#     data ='test'
+#     print(data)
+#     Output.insert(tk.END,INPUT)
 
-def show_tabA():
-    """used for drop down list"""
-    tk.label.config( text = tk.clickedA.get() )
+# def show_tabA():
+#     """used for drop down list"""
+#     tk.label.config( text = tk.clickedA.get() )
 
-def show_tabB():
-    """used for drop down list"""
-    tk.label.config( text = tk.clickedB.get() )
+# def show_tabB():
+#     """used for drop down list"""
+#     tk.label.config( text = tk.clickedB.get() )
 
 #-------------------------------------------------------------------------
 border_effects = {
@@ -111,7 +111,7 @@ def write_dataA():
     'page':frm3.get(),
     'notes':inputtxt.get("1.0","end-1c"),
     }
-    print(input_vals)
+    # print(input_vals)
 
     notes_db.insert_values(
         input_vals['table'],
@@ -138,7 +138,7 @@ def remove_item():
     r_index1=dropB['menu'].index(frm0_tb3.get())
     dropB['menu'].delete(r_index1)
     clickedB.set(dropB['menu'].entrycget(0,"label")) # select the first one 
-    print(dir(dropB['menu']))
+    # print(dir(dropB['menu']))
 
     r_index2=dropA['menu'].index(frm0_tb3.get())
     dropA['menu'].delete(r_index2)
@@ -201,11 +201,11 @@ def show_all_table_data():
 def delete_data():
     global show_vals
     notes_db.delete_data(
-        show_vals['table'],
-        show_vals['subject'],
-        show_vals['topic'],
-        show_vals['book'],
-        show_vals['page'],
+        table_name=clickedB.get(),
+        subject=frm0_tb2.get(),
+        topic=frm1_tb2.get(),
+        book=frm2_tb2.get(),
+        page=frm3_tb2.get(),
     )
     show_search_data()
 
