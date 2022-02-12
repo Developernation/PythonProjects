@@ -23,12 +23,12 @@ This python application utilizes a sqlite database on the backend to store recor
 * Note: if the ```python``` or ```python3``` command isn't recognized you may need to add Python to ```$PATH```
 
 ## Running the program
-1) in the terminal ensure you are in the ```sans_tools``` folder and run ```python NotesAppFe.py``` and you should seen the app on your screen!
+1) in the terminal ensure you are in the ```sans_tools``` folder and run ```python NotesAppFe.py``` or ```python3 NotesAppFe.py``` and you should seen the app on your screen!
 
 ## Usage
 The app uses data tables to save and access your index and automatically sorts the entries alphabetically by topic as you add them.
 
-The application has 3 tabs ```Add Data```, ```Search Data```, and ```Create Table``. 
+The application has 3 tabs ```Add Data```, ```Search Data```, and ```Create Table```. 
 
 By default the app creates the ```default_sans_table``` but you are able to create other tables specific to you class if you like in the ```Create Tables``` tab. 
 
