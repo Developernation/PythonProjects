@@ -30,7 +30,7 @@ The app uses data tables to save and access your index and automatically sorts t
 
 The application has 3 tabs ```Add Data```, ```Search Data```, and ```Create Table```. 
 
-By default the app creates the ```default_sans_table``` but you are able to create other tables specific to you class if you like in the ```Create Tables``` tab. 
+By default the app creates the ```default_sans_table``` but you are able to create other tables specific to your class if you like in the ```Create Tables``` tab. 
 
 In the ```Add Data``` tab, you can enter the data you would like to record and save it to the data table using the ```Add Data``` button.
 
