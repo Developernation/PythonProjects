@@ -8,9 +8,9 @@ import re
 pd.set_option('display.max_rows', None)
 
 
-## https://stackoverflow.com/questions/33155776/export-pandas-dataframe-into-a-pdf-file-using-python
+
 class SansNotesApp(object):
-    APP_FILES = 'SansNotesAppFiles'
+    APP_FILES = os.path.join('sans_tools','SansNotesAppFiles')
     APP_DATABASE_FILES = os.path.join(APP_FILES,'NotesAppDbFiles')
     CREATE_TABLE = """
         CREATE TABLE IF NOT EXISTS {table_name_field}
