@@ -16,5 +16,8 @@ This python application utilizes a sqlite database on the backend to store recor
 
 ## Installation
 
-1) [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and git clone https://github.com/Developernation/PythonProjects.git OR download the zip 
-2) cd into the sans_tools folder and 
+1) [Install Python 3.6 or higher](https://www.python.org/downloads/)
+2) [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and git clone https://github.com/Developernation/PythonProjects.git OR download the zip 
+3) ```cd sans_tools```` and run ```pip install -r requirements.txt``` or ```pip3 install -r requirements.txt``` if you have more than one version of pip running on your system
+
+
