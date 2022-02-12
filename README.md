@@ -19,8 +19,8 @@ This python application utilizes a sqlite database on the backend to store recor
 1) [Install Python 3.6 or higher](https://www.python.org/downloads/)
 2) [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and git clone https://github.com/Developernation/PythonProjects.git OR download the zip 
 3) ```cd sans_tools``` and run ```pip install -r requirements.txt``` or ```pip3 install -r requirements.txt``` if you have more than one version of pip running on your system
-*Note: if the ```pip``` command is not recognized you may need to [install pip](https://pip.pypa.io/en/stable/installation/)
-*Note: if the ```python``` or ```python3``` command isn't recognized you may need to add Python to ```$PATH```
+* Note: if the ```pip``` command is not recognized you may need to [install pip](https://pip.pypa.io/en/stable/installation/)
+* Note: if the ```python``` or ```python3``` command isn't recognized you may need to add Python to ```$PATH```
 
 ## Running the program
 1) in the terminal ensure you are in the ```sans_tools``` folder and run ```python NotesAppFe.py``` and you should seen the app on your screen!
