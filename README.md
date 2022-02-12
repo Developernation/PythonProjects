@@ -36,6 +36,12 @@ In the ```Add Data``` tab, you can enter the data you would like to record and s
 
 To view the data you just added you can select the ```Search Data``` tab, select the table you added data to using the drop down menu, and then click the ```Show All Data``` button or enter a search for your data and click ```Show Search Data```.
 
+To save data to an excel file you much first search for the data you'd like to display by:
+1) clicking the ```Search Data``` tab
+2) selecting a table from the drop down menu
+3) entering your search criteria (no fields are required and the search is a "fuzzy search" so partial words / numbers are okay). Alternatively, you can click ```Show All Data``` if you want everything from the table.
+4) click ```Save Display To Excel```.  This will save the data displayed on the app to and excel file in your ```Downloads``` folder. 
+
 To delete the displayed data you must first search for data to populate the display and then you can click the ```Delete Displayed Data``` button and the data will be removed from the table. 
 
 In the ```Create Table``` tab you can create or delete a table.
