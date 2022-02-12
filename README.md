@@ -49,6 +49,7 @@ To delete the displayed data you must first search for data to populate the disp
 ### Creating and Deleting Tables
 
 In the ```Create Table``` tab you can create or delete a table.
+
 --------------------------------------------------------------------------------------------------------------------
 That's it! Enjoy and let me know if you find bugs :)
 
