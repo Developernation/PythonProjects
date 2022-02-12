@@ -42,5 +42,5 @@ In the ```Create Table``` tab you can create or delete a table.
 
 That's it! Enjoy and let me know if you find bugs :)
 
-Say hello on [LinkedIn](www.linkedin.com/in/sim-a-2aa9878a)!
+Say hello on [LinkedIn](www.linkedin.com/in/sim-a-2aa9878a) !
 
