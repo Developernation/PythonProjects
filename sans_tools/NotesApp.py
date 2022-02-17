@@ -10,7 +10,7 @@ pd.set_option('display.max_rows', None)
 
 
 class SansNotesApp(object):
-    APP_FILES = os.path.join('sans_tools','SansNotesAppFiles')
+    APP_FILES = os.path.join(os.getcwd(),'SansNotesAppFiles')
     APP_DATABASE_FILES = os.path.join(APP_FILES,'NotesAppDbFiles')
     CREATE_TABLE = """
         CREATE TABLE IF NOT EXISTS {table_name_field}
