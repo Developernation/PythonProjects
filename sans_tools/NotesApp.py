@@ -109,6 +109,9 @@ class SansNotesApp(AppFileHandler):
         self.__cur = self.__con.cursor()
         logging.debug(self.__cur)
         return True
+    
+    def get_cursor(self):
+        return self.__cur 
 
     def check_db_file(self) -> bool:
         return os.path.exists(self.__db_name)
@@ -293,53 +296,51 @@ class SansNotesApp(AppFileHandler):
             print(f'{db_name} not found')
             return False
     
-    def insert_file_upload(
-        self,
-        file_name: str,
-        table_name:str,
-        sheetname = 0,
-        use_input_cols: List[str] = None,
-        na_values: str = None,
-        na_filter: bool = True,
-        delimiter: str = ',',
+    # def insert_file_upload(
+    #     self,
+    #     file_name: str,
+    #     table_name:str,
+    #     sheetname = 0,
+    #     use_input_cols: List[str] = None,
+    #     na_values: str = None,
+    #     na_filter: bool = True,
+    #     delimiter: str = ',',
 
-        topic_column_mapping:str = None,
-        book_column_mapping:str = None,
-        page_column_mapping:str = None,
-        subject_column_mapping:str = None,
-        notes_column_mapping:str = None
+    #     topic_column_mapping:str = None,
+    #     book_column_mapping:str = None,
+    #     page_column_mapping:str = None,
+    #     subject_column_mapping:str = None,
+    #     notes_column_mapping:str = None
 
-        ) -> bool:
-        """
-        Before calling this method the user will need to call:
-        - database_name
-        - db_connect_and_cursor
-        """
-        self.set_ingest_file(
-            file_name,
-            use_cols=use_input_cols,
-            sheetname=sheetname,
-            na_values=na_values,
-            na_filter=na_filter,
-            delimiter=delimiter
-            )
+    #     ) -> bool:
+    #     """
+    #     Before calling this method the user will need to call:
+    #     - database_name
+    #     - db_connect_and_cursor
+    #     """
+    #     self.set_ingest_file(
+    #         file_name,
+    #         use_cols=use_input_cols,
+    #         sheetname=sheetname,
+    #         na_values=na_values,
+    #         na_filter=na_filter,
+    #         delimiter=delimiter
+    #         )
         
-        self.set_colum_mappings(
-            topic_column = topic_column_mapping,
-            book_column = book_column_mapping,
-            page_column = page_column_mapping,
-            subject_column = subject_column_mapping,
-            notes_column = notes_column_mapping
-            )
+    #     self.set_colum_mappings(
+    #         topic_column = topic_column_mapping,
+    #         book_column = book_column_mapping,
+    #         page_column = page_column_mapping,
+    #         subject_column = subject_column_mapping,
+    #         notes_column = notes_column_mapping
+    #         )
 
-        self.rename_df_columns()
+    #     self.rename_df_columns()
 
-        iquery = self.build_insert_query(table_name)
-        self.__cur.execute( 
-            iquery
-        )
-        print(iquery)
-        return True
+    #     iquery = self.build_insert_query(table_name)
+
+        
+    #     return True
     
     
 

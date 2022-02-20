@@ -2,6 +2,7 @@ from numpy import void
 import pandas as pd
 from typing import List
 from pprint import pprint 
+import sqlite3
 
 class AppFileHandler():
     INSERT_FILE = """
@@ -15,7 +16,7 @@ class AppFileHandler():
     
     def __init__(self):
         self.ingest_file_df = None
-        self.mappings = None
+        
         self.insert_query = None
 
     def set_ingest_file(
@@ -51,40 +52,73 @@ class AppFileHandler():
         else:
             raise ValueError('Unable to process file. Please provide an excel or csv file')
          
-    def set_colum_mappings(
-        self,
-        topic_column:str = None,
-        book_column:str = None,
-        page_column:str = None,
-        subject_column:str = None,
-        notes_column:str = None
+    # def set_colum_mappings(
+    #     self,
+    #     topic_column:str = None,
+    #     book_column:str = None,
+    #     page_column:str = None,
+    #     subject_column:str = None,
+    #     notes_column:str = None
+    #     ) -> void:
+    #     """
+    #         input column mappings from dataframe to table column names
+    #     """
+    #     self.mappings = dict(filter(lambda x: x[1] is not None , {
+    #         'subject':subject_column,
+    #         'topic':topic_column,
+    #         'book':book_column,
+    #         'page':page_column,
+    #         'notes':notes_column,
+    #     }.items()))
+    
+    def rename_df_columns(
+        self, 
+        subject_column = None,
+        topic_column = None,
+        book_column = None,
+        page_column = None,
+        notes_column = None,
         ) -> void:
-        """
-            input column mappings from dataframe to table column names
-        """
-        self.mappings = dict(filter(lambda x: x[1] is not None , {
+        mappings = dict(filter(lambda x: x[1] is not None , {
             'subject':subject_column,
             'topic':topic_column,
             'book':book_column,
             'page':page_column,
             'notes':notes_column,
         }.items()))
-    
-    def rename_df_columns(self) -> void:
-
+        print(self.ingest_file_df.head())
+        print(mappings)
         self.ingest_file_df = self.ingest_file_df.rename(
-            columns={v:k for k,v in self.mappings.items()}
+            columns={v:k for k,v in mappings.items()}
         )
         print(self.ingest_file_df.columns)
         
     
-    def build_insert_query(self,table_name: str) -> str:
-        print(self.mappings.keys())
+    def build_insert_query(
+        self,
+        table_name: str,
+        cursor_obj,
+        subject_column,
+        topic_column,
+        book_column,
+        page_column,
+        notes_column,
+        ) -> bool:
+
+        mappings = dict(filter(lambda x: x[1] is not None , {
+            'subject':subject_column,
+            'topic':topic_column,
+            'book':book_column,
+            'page':page_column,
+            'notes':notes_column,
+        }.items()))
+
+        print(mappings.keys())
         formatted_values_tup = [
             (
                 k,self.ingest_file_df[k].tolist()
                 ) 
-                for k in self.ingest_file_df[list(self.mappings.keys())]
+                for k in self.ingest_file_df[list(mappings.keys())]
             ]
 
         cols = []
@@ -111,14 +145,18 @@ class AppFileHandler():
             values_insertion = formatted_values,
             )
         
-        return self.insert_query
+        cursor_obj.execute( 
+            self.insert_query
+        )
+        
+        return True
         
 
 if __name__ == '__main__':
     app = AppFileHandler()
-    test_file = 'sans_study_notes_test.xlsx'
-    app.set_ingest_file(test_file,use_cols=['Type', 'Topic', 'Page', 'Note'])
-    app.set_colum_mappings(topic_column='Type',subject_column='Topic',page_column='Page')
-    app.rename_df_columns()
-    pprint(app.build_insert_query('default_sans_table'))
+    # test_file = 'sans_study_notes_test.xlsx'
+    # app.set_ingest_file(test_file,use_cols=['Type', 'Topic', 'Page', 'Note'])
+    # app.set_colum_mappings(topic_column='Type',subject_column='Topic',page_column='Page')
+    # app.rename_df_columns()
+    # pprint(app.build_insert_query('default_sans_table'))
     

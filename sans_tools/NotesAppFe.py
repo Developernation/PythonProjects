@@ -411,28 +411,32 @@ def upload_data():
         'topic': check_len(topic),
         'book': check_len(book),
         'page': check_len(page),
-        'notes': check_len(page),
+        'notes': check_len(notes),
     }
 
-
-    icols = [v for v in mapping_vals.values() if  v is not None]
-    # print(
-    #     mapping_vals,
-    #     '\n',
-    #     icols
-    # )
-
-    res = notes_db.insert_file_upload(
-        filename,
-        table,
-        use_input_cols=icols,
-
-        topic_column_mapping = mapping_vals.get('topic'),
-        book_column_mapping = mapping_vals.get('book'),
-        page_column_mapping = mapping_vals.get('page'),
-        subject_column_mapping = mapping_vals.get('subject'),
-        notes_column_mapping = mapping_vals.get('notes')
+    notes_db.set_ingest_file(
+        filename
     )
+
+    notes_db.rename_df_columns(
+        topic_column=mapping_vals['topic'],
+        subject_column=mapping_vals['subject'],
+        page_column=mapping_vals['page'],
+        notes_column=mapping_vals['notes'],
+        book_column=mapping_vals['book']
+    )
+
+    cursor = notes_db.get_cursor()
+
+    res = notes_db.build_insert_query(
+        table,
+        cursor,
+        topic_column=mapping_vals['topic'],
+        subject_column=mapping_vals['subject'],
+        page_column=mapping_vals['page'],
+        notes_column=mapping_vals['notes'],
+        book_column=mapping_vals['book']
+        )
 
     if res:
         showinfo(
