@@ -312,10 +312,12 @@ tabControl.pack(expand=1, fill="both",side='right')
 #############################################################################
 ####################### Upload Excel File ###################################
 #############################################################################
+super_frame_tab4 = ttk.Frame(master=window,relief=border_effects['flat'])
 
 
 
-
+tabControl.add(super_frame_tab4,text='Upload CSV / Excel')
+tabControl.pack(expand=1, fill="both",side='right')
 ##############################################################################
 
 window.mainloop()
