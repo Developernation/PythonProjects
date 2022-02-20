@@ -1,4 +1,5 @@
-from tkinter.filedialog import askopenfile
+from tkinter.filedialog import askopenfilename
+from tkinter.messagebox import showinfo
 from NotesApp import SansNotesApp as snp
 from datetime import datetime
 from tkinter import ttk
@@ -16,14 +17,15 @@ notes_db.create_table('default_sans_table')
 db_tables = notes_db.show_tables()
 
 #first frame
-def build_frame(label_text_info,box_width,master_frame):
+def build_frame(label_text_info,box_width,master_frame,label_width=10):
     frame1 = tk.Frame(master=master_frame,relief=border_effects['flat'],width=100, height=10)
     text_box1 = tk.Entry(master=frame1, width=box_width, borderwidth=4)
-    label1 = tk.Label(master=frame1, text=label_text_info,width=10)
+    label1 = tk.Label(master=frame1, text=label_text_info,width=label_width)
     label1.pack(side='left')
     text_box1.pack(side='left')
     frame1.pack(fill=tk.X)
     return text_box1
+
 
 #-------------------------------------------------------------------------
 border_effects = {
@@ -52,6 +54,9 @@ clickedA.set(db_tables[0])
 
 clickedB = tk.StringVar()
 clickedB.set(db_tables[0])
+
+clickedC = tk.StringVar()
+clickedC.set(db_tables[0])
 
 ########################################################
 #################### Add Data ##########################
@@ -105,6 +110,7 @@ def write_dataA():
 def add_opt():  
     dropA['menu'].add_command(label=frm0_tb3.get(), command=tk._setit(clickedA, frm0_tb3.get()))
     dropB['menu'].add_command(label=frm0_tb3.get(), command=tk._setit(clickedB, frm0_tb3.get()))
+    dropC['menu'].add_command(label=frm0_tb3.get(), command=tk._setit(clickedC, frm0_tb3.get()))
     global db_tables
     db_tables.append(frm0_tb3.get())
 
@@ -121,6 +127,10 @@ def remove_item():
     r_index2=dropA['menu'].index(frm0_tb3.get())
     dropA['menu'].delete(r_index2)
     clickedA.set(dropB['menu'].entrycget(0,"label")) # select the first one 
+    
+    r_index3=dropC['menu'].index(frm0_tb3.get())
+    dropC['menu'].delete(r_index3)
+    clickedC.set(dropC['menu'].entrycget(0,"label")) # select the first one 
     return True 
 
 def delete_table():
@@ -179,6 +189,27 @@ def show_all_table_data():
     global search_data
     search_data = notes_db.show_table_data(clickedB.get())
     Output.insert(tk.END,search_data)
+
+def show_all_ingest_columns():
+    Output_tb4.delete('1.0', tk.END)
+    col_data = None
+    if filename.endswith('xlsx'):
+        col_data = list(pd.read_excel(filename).columns)
+    else:
+        col_data = list(pd.read_csv(filename).columns)
+    Output_tb4.insert(tk.END,"""
+                      *********Directions****** 
+    1) Map the columns in your file to their respective column in the 
+    table schema by entering them in the spaces above.
+
+    2) If you do not want to map a specific column from you file you can 
+    leave the entry blank.
+
+                  Below are the columns in your file:\n
+    ******************** Ingest Data Column Names *******************
+    \n\t{}
+    *****************************************************************
+    """.format('\n\t'.join(col_data)))
 
 def delete_data():
     notes_db.delete_data(
@@ -314,8 +345,156 @@ tabControl.pack(expand=1, fill="both",side='right')
 #############################################################################
 super_frame_tab4 = ttk.Frame(master=window,relief=border_effects['flat'])
 
+directions_frame = tk.Frame(master=super_frame_tab4,relief=border_effects['flat'],width=70, height=50)
+directions_text = """"
+              ********** File Upload Directions **********
+    1) Select a table to upload data or create one in the Create Table tab.
+    2) Select your file by using the Ingest Data button below
+    3) Click Show Columns to display the availble columns for mapping to the table schema columns
+    4) Enter the columns from your file that you would like to map to table schema columns in section below
+    5) Click the Upload Data button
+""" 
+
+directions_label = tk.Label(master=directions_frame, text=directions_text ,width=70)
+directions_label.pack(side='left')
+directions_frame.pack(fill=tk.X) 
+
+drop_down_frameC = tk.Frame(master=super_frame_tab4,relief=border_effects['flat'],width=50, height=10)
+drop_down_labelC = tk.Label( drop_down_frameC , text = "Select Table:" )
+drop_down_labelC.pack(side='left')
+# Create Dropdown menu
+dropC = tk.OptionMenu(drop_down_frameC , clickedC, *db_tables)
+dropC.pack(side='left')
+drop_down_frameC.pack(fill=tk.X)
+
+frm0_tb4 = build_frame(f'{label_text[0][:-1]} Column Mapping',10,super_frame_tab4,label_width=20)
+frm1_tb4 = build_frame(f'{label_text[1][:-1]} Column Mapping',10,super_frame_tab4,label_width=20)
+frm2_tb4 = build_frame(f'{label_text[2][:-1]} Column Mapping',10,super_frame_tab4,label_width=20)
+frm3_tb4 = build_frame(f'{label_text[3][:-1]} Column Mapping',10,super_frame_tab4,label_width=20)
+frm6_tb4 = build_frame('Notes Column Mapping',10,super_frame_tab4,label_width=20)
+
+def ingest_file_data():
+
+    #select file
+    filetypes = (
+        ('CSV files', '*.csv'),
+        ('Excel files', '*.xlsx')
+    )
+    global filename 
+    filename = askopenfilename(
+        title='Open files',
+        initialdir='/',
+        filetypes=filetypes)
+
+    showinfo(
+        title='Selected Files',
+        message=f'You selected:\n {filename}'
+    )
+
+def check_len(str_):
+    return str_ if len(str_) > 0 else None
 
 
+def upload_data():
+    Output_tb4.delete('1.0', tk.END)
+    table = clickedC.get()
+
+    subject = frm0_tb4.get()
+    topic = frm1_tb4.get()
+    book = frm2_tb4.get()
+    page = frm3_tb4.get()
+    notes = frm6_tb4.get()
+    
+    mapping_vals = {
+        
+        'subject': check_len(subject),
+        'topic': check_len(topic),
+        'book': check_len(book),
+        'page': check_len(page),
+        'notes': check_len(page),
+    }
+
+
+    icols = [v for v in mapping_vals.values() if  v is not None]
+    # print(
+    #     mapping_vals,
+    #     '\n',
+    #     icols
+    # )
+
+    res = notes_db.insert_file_upload(
+        filename,
+        table,
+        use_input_cols=icols,
+
+        topic_column_mapping = mapping_vals.get('topic'),
+        book_column_mapping = mapping_vals.get('book'),
+        page_column_mapping = mapping_vals.get('page'),
+        subject_column_mapping = mapping_vals.get('subject'),
+        notes_column_mapping = mapping_vals.get('notes')
+    )
+
+    if res:
+        showinfo(
+            title='File Uploaded',
+            message=f'{filename} was uploaded to {table}'
+        )
+
+    else:
+        showinfo(
+            title='File Upload Failure',
+            message="Please review input colums:\n{}".format(',\n'.join(icols))
+        )
+
+
+
+    
+    
+frm4_tb4 = tk.Frame(master=super_frame_tab4,relief=border_effects['flat'],width=100, height=10)
+label_opt4a = tk.Label(master=frm4_tb4, text='Options:',width=10)
+Ingest_Button = tk.Button(master=frm4_tb4, 
+                 height = 1,
+                 width = 15,
+                 text ="Ingest Data",
+                 relief=tk.RIDGE,
+                 padx=5,
+                 fg = "blue",
+                 command = ingest_file_data
+                 )
+
+Show_Columns_Button = tk.Button(master=frm4_tb4, 
+                 height = 1,
+                 width = 15,
+                 text ="Show Columns",
+                 relief=tk.RIDGE,
+                 padx=5,
+                 fg = "green",
+                 command = show_all_ingest_columns
+                 )
+
+Upload_Data_Button = tk.Button(master=frm4_tb4, 
+                 height = 1,
+                 width = 15,
+                 text ="Upload Data",
+                 relief=tk.RIDGE,
+                 padx=5,
+                 fg = "orange",
+                 command = upload_data
+                 )
+
+frm5_tb4 = tk.Frame(master=super_frame_tab4,relief=border_effects['flat'],width=100, height=10)
+###
+Output_tb4 = tk.Text(frm5_tb4, height = 40,
+              width = 99,
+              bg = "light green")
+
+label_opt4a.pack(side='left')
+Ingest_Button.pack(side='left')
+Show_Columns_Button.pack(side='left')
+Upload_Data_Button.pack(side='left')
+Output_tb4.pack(side='bottom')
+frm4_tb4.pack(fill=tk.X)
+frm5_tb4.pack(fill=tk.X)
 tabControl.add(super_frame_tab4,text='Upload CSV / Excel')
 tabControl.pack(expand=1, fill="both",side='right')
 ##############################################################################

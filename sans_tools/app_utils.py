@@ -29,6 +29,7 @@ class AppFileHandler():
         ) -> void:
         
         if file_name.endswith('xlsx'):
+            print(use_cols)
             self.ingest_file_df = pd.read_excel(
                 file_name,
                 sheet_name = sheetname,
@@ -78,7 +79,7 @@ class AppFileHandler():
         
     
     def build_insert_query(self,table_name: str) -> str:
-        
+        print(self.mappings.keys())
         formatted_values_tup = [
             (
                 k,self.ingest_file_df[k].tolist()
