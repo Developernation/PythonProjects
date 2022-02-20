@@ -1,3 +1,4 @@
+from tkinter.filedialog import askopenfile
 from NotesApp import SansNotesApp as snp
 from datetime import datetime
 from tkinter import ttk
@@ -308,7 +309,14 @@ tabControl.add(super_frame_tab3,text='Create Table')
 
 tabControl.pack(expand=1, fill="both",side='right')
 
-#####
+#############################################################################
+####################### Upload Excel File ###################################
+#############################################################################
+
+
+
+
+##############################################################################
 
 window.mainloop()
 

@@ -61,20 +61,31 @@ class AppFileHandler():
         """
             input column mappings from dataframe to table column names
         """
-        self.mappings = {
+        self.mappings = dict(filter(lambda x: x[1] is not None , {
             'subject':subject_column,
             'topic':topic_column,
             'book':book_column,
             'page':page_column,
             'notes':notes_column,
-        }
+        }.items()))
     
     def rename_df_columns(self) -> void:
-        self.ingest_file_df = self.ingest_file_df.rename({k:v for k,v in self.mappings.items() if v is not None})
+
+        self.ingest_file_df = self.ingest_file_df.rename(
+            columns={v:k for k,v in self.mappings.items()}
+        )
+        print(self.ingest_file_df.columns)
+        
     
     def build_insert_query(self,table_name: str) -> str:
         
-        formatted_values_tup = [(k,self.ingest_file_df[k].tolist()) for k in self.ingest_file_df.columns]
+        formatted_values_tup = [
+            (
+                k,self.ingest_file_df[k].tolist()
+                ) 
+                for k in self.ingest_file_df[list(self.mappings.keys())]
+            ]
+
         cols = []
         formatted_values_lst = []
         for data in formatted_values_tup:
@@ -84,7 +95,14 @@ class AppFileHandler():
         formatted_values_final = list(zip(*formatted_values_lst))
         cols_insertion = '{}'.format(','.join(cols))
 
-        formatted_values = ','.join('({})'.format(','.join('\'{}\''.format(x) for x in vals_tup)) for vals_tup in  formatted_values_final)
+        formatted_values = ','.join(
+            '({})'.format(
+                ','.join(
+                    '\'{}\''.format(x) for x in vals_tup
+                    )
+                ) 
+                for vals_tup in  formatted_values_final
+            )
 
         self.insert_query = AppFileHandler.INSERT_FILE.format(
             table_name_field = table_name,
@@ -93,31 +111,6 @@ class AppFileHandler():
             )
         
         return self.insert_query
-        
-
-
-
-
-
-
-            
-
-
-        
-
-
-        
-
-
-
-
-
-
-    
-
-        
-
-        
         
 
 if __name__ == '__main__':
