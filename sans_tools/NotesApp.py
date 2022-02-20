@@ -1,5 +1,6 @@
 from typing import List, Any
 from itertools import chain
+from app_utils import AppFileHandler
 import pandas as pd
 import sqlite3
 import logging
@@ -65,7 +66,8 @@ class SansNotesApp(object):
         DELETE FROM {table_name_field} 
     """
 
-    def __init__(self):  
+    def __init__(self):
+        super().__init__()
         if not os.path.exists(SansNotesApp.APP_FILES):
              os.mkdir(SansNotesApp.APP_FILES)
 
