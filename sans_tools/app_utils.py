@@ -150,13 +150,4 @@ class AppFileHandler():
         )
         
         return True
-        
-
-if __name__ == '__main__':
-    app = AppFileHandler()
-    # test_file = 'sans_study_notes_test.xlsx'
-    # app.set_ingest_file(test_file,use_cols=['Type', 'Topic', 'Page', 'Note'])
-    # app.set_colum_mappings(topic_column='Type',subject_column='Topic',page_column='Page')
-    # app.rename_df_columns()
-    # pprint(app.build_insert_query('default_sans_table'))
     
