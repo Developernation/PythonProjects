@@ -222,8 +222,14 @@ def delete_data():
     show_search_data()
 
 def save_to_excel():
+    save_location = f"{os.path.join(os.path.expanduser('~'),'Downloads','search_data' + datetime.today().strftime('%y%m%d_%H%M%S'))}.xlsx"
     search_data.sort_values(by='topic').reset_index(drop=True).to_excel(
-        f"{os.path.join(os.path.expanduser('~'),'Downloads','search_data' + datetime.today().strftime('%y%m%d_%H%M%S'))}.xlsx"
+            save_location
+        )
+    
+    showinfo(
+            title='File Saved',
+            message="File has been saved to:\n{}".format(save_location)
         )
 
 super_frame_tab2 = ttk.Frame(master=window,relief=border_effects['flat'])
