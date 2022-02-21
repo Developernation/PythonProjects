@@ -1,5 +1,6 @@
 from typing import List, Any
 from itertools import chain
+from app_utils import AppFileHandler
 import pandas as pd
 import sqlite3
 import logging
@@ -9,7 +10,7 @@ pd.set_option('display.max_rows', None)
 
 
 
-class SansNotesApp(object):
+class SansNotesApp(AppFileHandler):
     APP_FILES = os.path.join(os.getcwd(),'SansNotesAppFiles')
     APP_DATABASE_FILES = os.path.join(APP_FILES,'NotesAppDbFiles')
     CREATE_TABLE = """
@@ -65,7 +66,8 @@ class SansNotesApp(object):
         DELETE FROM {table_name_field} 
     """
 
-    def __init__(self):  
+    def __init__(self):
+        super().__init__()
         if not os.path.exists(SansNotesApp.APP_FILES):
              os.mkdir(SansNotesApp.APP_FILES)
 
@@ -107,6 +109,9 @@ class SansNotesApp(object):
         self.__cur = self.__con.cursor()
         logging.debug(self.__cur)
         return True
+    
+    def get_cursor(self):
+        return self.__cur 
 
     def check_db_file(self) -> bool:
         return os.path.exists(self.__db_name)
@@ -290,4 +295,73 @@ class SansNotesApp(object):
         else:
             print(f'{db_name} not found')
             return False
+    
+    # def insert_file_upload(
+    #     self,
+    #     file_name: str,
+    #     table_name:str,
+    #     sheetname = 0,
+    #     use_input_cols: List[str] = None,
+    #     na_values: str = None,
+    #     na_filter: bool = True,
+    #     delimiter: str = ',',
 
+    #     topic_column_mapping:str = None,
+    #     book_column_mapping:str = None,
+    #     page_column_mapping:str = None,
+    #     subject_column_mapping:str = None,
+    #     notes_column_mapping:str = None
+
+    #     ) -> bool:
+    #     """
+    #     Before calling this method the user will need to call:
+    #     - database_name
+    #     - db_connect_and_cursor
+    #     """
+    #     self.set_ingest_file(
+    #         file_name,
+    #         use_cols=use_input_cols,
+    #         sheetname=sheetname,
+    #         na_values=na_values,
+    #         na_filter=na_filter,
+    #         delimiter=delimiter
+    #         )
+        
+    #     self.set_colum_mappings(
+    #         topic_column = topic_column_mapping,
+    #         book_column = book_column_mapping,
+    #         page_column = page_column_mapping,
+    #         subject_column = subject_column_mapping,
+    #         notes_column = notes_column_mapping
+    #         )
+
+    #     self.rename_df_columns()
+
+    #     iquery = self.build_insert_query(table_name)
+
+        
+    #     return True
+    
+    
+
+if __name__ == '__main__':
+    #pass
+    # test_file = 'sans_study_notes_test.xlsx'
+
+    app = SansNotesApp()
+    app.database_name = 'sans'
+    app.db_connect_and_cursor()
+    # app.drop_table('default_sans_table')
+    # app.create_table('default_sans_table')
+    #app.set_ingest_file(test_file,use_cols=['Type', 'Topic', 'Page', 'Note'])
+    #app.set_colum_mappings(topic_column='Type',subject_column='Topic',page_column='Page',notes_column='Note')
+    #app.rename_df_columns()
+    # app.insert_file_upload(
+    #     test_file,
+    #     'default_sans_table',
+    #     use_input_cols=['Type', 'Topic', 'Page', 'Note'],
+    #     topic_column_mapping='Type',
+    #     subject_column_mapping='Topic',
+    #     page_column_mapping='Page'
+    #     )
+    app.committ_and_close()

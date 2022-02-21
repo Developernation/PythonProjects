@@ -5,3 +5,5 @@
 /SansNotesAppFiles/*
 /SansNotesAppFiles
 /NotesAppFeV2.py
+/*.csv
+/*.xlsx
