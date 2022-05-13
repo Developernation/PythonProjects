@@ -185,7 +185,7 @@ class SansNotesApp(AppFileHandler):
         return True
     
     def show_table_data(self,table_name) -> List[Any]:
-        clean_table_name = SansNotesApp.check_char_string(table_name)
+        clean_table_name = SansNotesApp.check_char_string(table_name,strict=False)
         show_table_query_string = SansNotesApp.SHOW_TABLE_DATA.format(table_name_field = clean_table_name)
         logging.debug(show_table_query_string)
         table_data = [*self.__cur.execute(
@@ -249,9 +249,9 @@ class SansNotesApp(AppFileHandler):
     @staticmethod
     def check_char_string(alphanum_string,strict=True) -> str:
         if strict:
-            return ''.join(re.findall('[\w+\-0-9\s]+',alphanum_string))
+            return ''.join(re.findall('.*',alphanum_string))
         else:
-            return ''.join(re.findall('[\w\-0-9\._+,\s\']+',alphanum_string))
+            return ''.join(re.findall('.*',alphanum_string))
     
     @staticmethod
     def __format_values_string(val:str,strict_format=True) -> str:
@@ -295,73 +295,3 @@ class SansNotesApp(AppFileHandler):
         else:
             print(f'{db_name} not found')
             return False
-    
-    # def insert_file_upload(
-    #     self,
-    #     file_name: str,
-    #     table_name:str,
-    #     sheetname = 0,
-    #     use_input_cols: List[str] = None,
-    #     na_values: str = None,
-    #     na_filter: bool = True,
-    #     delimiter: str = ',',
-
-    #     topic_column_mapping:str = None,
-    #     book_column_mapping:str = None,
-    #     page_column_mapping:str = None,
-    #     subject_column_mapping:str = None,
-    #     notes_column_mapping:str = None
-
-    #     ) -> bool:
-    #     """
-    #     Before calling this method the user will need to call:
-    #     - database_name
-    #     - db_connect_and_cursor
-    #     """
-    #     self.set_ingest_file(
-    #         file_name,
-    #         use_cols=use_input_cols,
-    #         sheetname=sheetname,
-    #         na_values=na_values,
-    #         na_filter=na_filter,
-    #         delimiter=delimiter
-    #         )
-        
-    #     self.set_colum_mappings(
-    #         topic_column = topic_column_mapping,
-    #         book_column = book_column_mapping,
-    #         page_column = page_column_mapping,
-    #         subject_column = subject_column_mapping,
-    #         notes_column = notes_column_mapping
-    #         )
-
-    #     self.rename_df_columns()
-
-    #     iquery = self.build_insert_query(table_name)
-
-        
-    #     return True
-    
-    
-
-if __name__ == '__main__':
-    #pass
-    # test_file = 'sans_study_notes_test.xlsx'
-
-    app = SansNotesApp()
-    app.database_name = 'sans'
-    app.db_connect_and_cursor()
-    # app.drop_table('default_sans_table')
-    # app.create_table('default_sans_table')
-    #app.set_ingest_file(test_file,use_cols=['Type', 'Topic', 'Page', 'Note'])
-    #app.set_colum_mappings(topic_column='Type',subject_column='Topic',page_column='Page',notes_column='Note')
-    #app.rename_df_columns()
-    # app.insert_file_upload(
-    #     test_file,
-    #     'default_sans_table',
-    #     use_input_cols=['Type', 'Topic', 'Page', 'Note'],
-    #     topic_column_mapping='Type',
-    #     subject_column_mapping='Topic',
-    #     page_column_mapping='Page'
-    #     )
-    app.committ_and_close()
