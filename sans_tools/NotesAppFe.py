@@ -295,7 +295,7 @@ frame0a_tb2.pack(fill=tk.X)
 frame0b_tb2 = tk.Frame(master=super_frame_tab2,relief=border_effects['flat'],width=100, height=10)
 ###
 Output = tk.Text(frame0b_tb2, height = 50,
-              width = 99,
+              width = 150,
               bg = "light cyan")
 ###
 Output.pack(side='left')
