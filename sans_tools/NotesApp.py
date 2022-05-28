@@ -153,21 +153,19 @@ class SansNotesApp(AppFileHandler):
         page, 
         notes = ''
         )-> bool:
-        values_ = ','.join(
+        values_list = list(
             map(
                 lambda x: str(x),
                     [
-                        subject, 
-                        topic, 
-                        book, 
-                        page, 
-                        notes
+                        subject.replace("'","`"), 
+                        topic.replace("'","`"), 
+                        book.replace("'","`"), 
+                        page.replace("'","`"), 
+                        notes.replace("'","`")
                     ]
             )
         )
-        
-        values_str = SansNotesApp.check_char_string(values_,strict=False)
-        values_list = values_str.split(',')
+        print(values_list)
         fmt_func = SansNotesApp.__format_values_string
         insert_value_query_string = SansNotesApp.INSERT.format(
             table_name_field=table_name,
