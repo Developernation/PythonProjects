@@ -165,7 +165,7 @@ class SansNotesApp(AppFileHandler):
                     ]
             )
         )
-        print(values_list)
+    
         fmt_func = SansNotesApp.__format_values_string
         insert_value_query_string = SansNotesApp.INSERT.format(
             table_name_field=table_name,
